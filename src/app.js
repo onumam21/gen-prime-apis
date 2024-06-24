@@ -21,41 +21,41 @@ app.get('/users', async (req, res, next) => {
 });
 
 app.post('/users', async (req, res, next) => {
-    console.log(req.body);
-    res.json('register');
-  });
+  console.log(req.body);
+  res.json('register');
+});
 
-  app.post('/users', async (req, res, next) => {
-    const { email, name, password, confirmPassword, isAdmin = false } = req.body;
-    // Step-1 : Validate exist
-    if (!email || !name || !password || !confirmPassword) {
-      return res.status(400).json({ message: 'All field required' });
-    }
-    // Step-2 : Validate password
-    if(password !== confirmPassword) {
-        return res.status(400).json ({message: 'password mismatch'});
-    }
+app.post('/users', async (req, res, next) => {
+  const { email, name, password, confirmPassword, isAdmin = false } = req.body;
+  // Step-1 : Validate exist
+  if (!email || !name || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'All field required' });
+  }
+  // Step-2 : Validate password
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'password mismatch' });
+  }
 
-    if (!email.includes('@')) {
-        return res.status(400).json ({message: 'invalid email address'});
-    }
-    const existingUser = await db.user.findUnique({
-        where: { email: email }
-    });
-    if (existingUser) {
-        return res.status(400).json({ message: 'Email already exists' });
-    }
-    // Step-3 : Create NewUser
-    const newUser = await db.user.create({
-      data: {
-        email: email,
-        name: name,
-        password: password,
-        isAdmin: isAdmin,
-      },
-    });
-    res.status(201).json(newUser);
+  if (!email.includes('@')) {
+    return res.status(400).json({ message: 'invalid email address' });
+  }
+  const existingUser = await db.user.findUnique({
+    where: { email: email },
   });
+  if (existingUser) {
+    return res.status(400).json({ message: 'Email already exists' });
+  }
+  // Step-3 : Create NewUser
+  const newUser = await db.user.create({
+    data: {
+      email: email,
+      name: name,
+      password: password,
+      isAdmin: isAdmin,
+    },
+  });
+  res.status(201).json(newUser);
+});
 
 // GET /users/2
 app.get('/users/:userId', async (req, res, next) => {
@@ -64,10 +64,10 @@ app.get('/users/:userId', async (req, res, next) => {
   const userId = params.userId;
   console.log(userId);
 
-  const user = await db.user.findUnique({ where : {id: +userId} });
+  const user = await db.user.findUnique({ where: { id: +userId } });
   //Step3 : เจอ user ใน db ถ้าไม่เจอ => 404?
   if (!user) {
-    return res.status(404).json ({ message: 'User not found'});
+    return res.status(404).json({ message: 'User not found' });
   }
   //ถ้าเจอ
   res.json(user); //status 200
